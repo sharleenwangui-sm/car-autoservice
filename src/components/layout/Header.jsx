@@ -4,7 +4,7 @@ import { Menu, X } from "lucide-react";
 import { Button } from "../ui";
 
 const navLinks = [
-  { name: "Services", href: "/services", type: "route" },
+  { name: "Services", href: "/services", type: "scroll" },
   { name: "About Us", href: "#about", type: "scroll" },
   { name: "Testimonials", href: "#testimonials", type: "scroll" },
 ];

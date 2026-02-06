@@ -4,7 +4,7 @@ import { LoadingScreen } from "./components/LoadingScreen";
 import { Header, Footer } from "./components/layout";
 import { Hero, ServiceCards, About, Testimonials } from "./components/sections";
 import { BookingPage, CallButton } from "./components/pages/";
-import { default as Services } from "./components/pages/Services.jsx";
+import { default as Services } from "./components/sections/Services.jsx";
 
 function HomePage() {
   return (
@@ -14,6 +14,7 @@ function HomePage() {
         <Hero />
         <ServiceCards />
         <About />
+        <Services />
         <Testimonials />
       </main>
       <Footer />
@@ -42,7 +43,6 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/booking" element={<BookingPage />} />
-          <Route path="/services" element={<Services />} />
         </Routes>
       </div>
     </Router>

@@ -10,20 +10,20 @@ import {
 } from "lucide-react";
 import { Button, Card } from "../ui";
 
+const services = [
+  { id: "sales", name: "Pre-Owned Car Sales", price: 79.99 },
+  { id: "restore", name: "Car restoration", price: 189.0 },
+  { id: "detail", name: "Car Detailing", price: 45.0 },
+  { id: "repair", name: "Car Repair & Servicing", price: 29.99 },
+  { id: "parts", name: "Car Parts Sales (On-Site & Online)", price: 29.99 },
+];
+
 const steps = [
-  { id: 1, name: "Vehicle", label: "Vehicle" },
-  { id: 2, name: "Services", label: "Services" },
+  { id: 1, name: "Services", label: "Services" },
+  { id: 2, name: "Vehicle", label: "Vehicle" },
   { id: 3, name: "Schedule", label: "Schedule" },
   { id: 4, name: "Details", label: "Details" },
 ];
-
-const services = [
-  { id: "oil", name: "Full Synthetic Oil Change", price: 79.99 },
-  { id: "brake", name: "Brake Pad Replacement", price: 189.0 },
-  { id: "tire", name: "Tire Rotation & Balance", price: 45.0 },
-  { id: "ac", name: "AC Performance Check", price: 29.99 },
-];
-
 const timeSlots = ["08:00 AM", "10:30 AM", "01:30 PM", "03:00 PM"];
 
 const years = Array.from({ length: 30 }, (_, i) => 2024 - i);
@@ -654,10 +654,7 @@ export function BookingPage() {
             <a
               href="tel:+254722334455"
               className="flex items-center gap-2 text-gray-400 hover:text-white text-sm transition-colors"
-            >
-              <Phone className="w-4 h-4" />
-              +(254) 722334455
-            </a>
+            ></a>
           </div>
         </div>
       </footer>

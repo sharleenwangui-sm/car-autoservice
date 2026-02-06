@@ -47,7 +47,7 @@ export function Testimonials() {
   return (
     <section id="testimonials" className="py-16 lg:py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <SectionTitle title="What Our Drivers Say" centered className="mb-12" />
+        <SectionTitle title="What Our Clients Say" centered className="mb-12" />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {testimonials.map((testimonial, index) => (

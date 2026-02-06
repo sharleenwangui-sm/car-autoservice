@@ -15,33 +15,6 @@ const stats = [
   { value: "99%", label: "Happy Clients" },
 ];
 
-const features = [
-  {
-    icon: Users,
-    title: "Expert Technicians",
-    description:
-      "Our Ghana flagship center and global hubs are staffed by certified master technicians skilled in both modern and classic vehicles.",
-  },
-  {
-    icon: FileText,
-    title: "Integrity & Transparency",
-    description:
-      "We build trust through verified vehicle histories, honest diagnostics, and fair, upfront pricing for all services.",
-  },
-  {
-    icon: Clock,
-    title: "Global Network, Local Speed",
-    description:
-      "Leveraging our international hubs, we ensure efficient parts sourcing and service, tailored to your local market.",
-  },
-  {
-    icon: Shield,
-    title: "Craftsmanship Guaranteed",
-    description:
-      "We blend advanced engineering with skilled artistry, offering premium restoration, detailing, and repair with a commitment to excellence.",
-  },
-];
-
 const values = [
   {
     icon: Target,
@@ -118,32 +91,13 @@ export function About() {
         </div>
 
         {/* Core Services & Expertise */}
-        <div className="mt-16">
-          <h3 className="text-2xl font-bold text-center text-gray-900 mb-10">
-            Our Core Expertise
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
-              <div key={index} className="text-center lg:text-left">
-                <div className="w-14 h-14 bg-gray-100 rounded-xl flex items-center justify-center mx-auto lg:mx-0 mb-4">
-                  <feature.icon className="w-6 h-6 text-primary" />
-                </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-600 text-sm">{feature.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
 
         {/* Closing Note */}
         <div className="mt-16 text-center max-w-3xl mx-auto">
           <p className="text-gray-700 italic">
-            "Driven by a leadership team with decades of excellence in
-            aerospace, defense, and global entrepreneurship, Akwaaba Auto is
-            more than a service provider—we are your trusted partner in
-            automotive luxury, innovation, and reliability."
+            Driven by a leadership team with decades of excellence in aerospace,
+            defense, and global entrepreneurship, Akwaaba Auto is your trusted
+            partner in automotive luxury, innovation, and reliability.
           </p>
         </div>
       </div>

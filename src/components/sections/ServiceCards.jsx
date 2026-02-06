@@ -1,28 +1,28 @@
 import { Snowflake, Zap, Settings, ArrowRight } from "lucide-react";
 import { Card, CardIcon, CardContent } from "../ui";
+import { Link } from "react-router-dom";
 
 const services = [
   {
     icon: Snowflake,
-    title: "AC Performance Check",
-    description:
-      "Keep your cabin cool and air filtered with our comprehensive climate system diagnostic.",
+    title: "Pre-owned car sales",
+    description: "Wide selection of high-quality pre-owned vehicles",
+    "Focus on luxury, executive, and performance cars ":
+      "Verified vehicle history and inspection for trust and transparency",
     iconBg: "bg-blue-100",
     iconColor: "text-blue-500",
   },
   {
     icon: Zap,
-    title: "Battery & Electrical",
-    description:
-      "Full diagnostic tests and high-performance battery replacements for all vehicle makes.",
+    title: "Car Restoration",
+    description: "Restoration of classic, vintage, and accident-damaged cars",
     iconBg: "bg-amber-100",
     iconColor: "text-amber-500",
   },
   {
     icon: Settings,
-    title: "Oil & Filter Change",
-    description:
-      "Premium synthetic oils and OEM filters to keep your engine running at peak efficiency.",
+    title: "Car Detailing",
+    description: "Premium interior and exterior detailing.",
     iconBg: "bg-primary/20",
     iconColor: "text-primary",
   },
@@ -44,13 +44,13 @@ export function ServiceCards() {
               <p className="text-gray-600 text-sm mb-4">
                 {service.description}
               </p>
-              <a
-                href="#"
+              <Link
+                to="/booking"
                 className="inline-flex items-center gap-2 text-primary font-semibold text-sm hover:gap-3 transition-all"
               >
                 Schedule Service
                 <ArrowRight className="w-4 h-4" />
-              </a>
+              </Link>
             </Card>
           ))}
         </div>

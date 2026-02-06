@@ -10,13 +10,13 @@ const services = [
   "HVAC Systems",
 ];
 
-const quickLinks = [
-  { name: "About Our Team", href: "#about" },
-  { name: "Career Opportunities", href: "#" },
-  { name: "Client Testimonials", href: "#testimonials" },
-  { name: "Online Booking", href: "/booking" },
-  { name: "Privacy Policy", href: "#" },
-];
+// const quickLinks = [
+//   { name: "About Our Team", href: "#about" },
+//   { name: "Career Opportunities", href: "#" },
+//   { name: "Client Testimonials", href: "#testimonials" },
+//   { name: "Online Booking", href: "/booking" },
+//   { name: "Privacy Policy", href: "#" },
+// ];
 
 export function Footer() {
   return (
@@ -27,11 +27,11 @@ export function Footer() {
           <div>
             <Link to="/" className="flex items-center gap-2 mb-4">
               <img
-                src="/akwaaba-logo.svg"
+                src="/akwaaba-logo-cropped.png"
                 alt="Akwaaba Auto"
                 className="w-10 h-10"
               />
-              <span className="text-xl font-bold">AKWAABA AUTO</span>
+              {/* <span className="text-xl font-bold">AKWAABA AUTO</span> */}
             </Link>
             <p className="text-gray-400 text-sm mb-6">
               Professional automotive care you can trust. Expert diagnostics,
@@ -74,7 +74,7 @@ export function Footer() {
           </div>
 
           {/* Quick Links */}
-          <div>
+          {/* <div>
             <h4 className="text-primary font-semibold uppercase tracking-wider text-sm mb-4">
               Quick Links
             </h4>
@@ -99,7 +99,7 @@ export function Footer() {
                 </li>
               ))}
             </ul>
-          </div>
+          </div> */}
 
           {/* Newsletter */}
           <div>
