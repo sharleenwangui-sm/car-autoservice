@@ -3,7 +3,8 @@ import { useState, useEffect } from "react";
 import { LoadingScreen } from "./components/LoadingScreen";
 import { Header, Footer } from "./components/layout";
 import { Hero, ServiceCards, About, Testimonials } from "./components/sections";
-import { BookingPage } from "./components/pages";
+import { BookingPage, CallButton } from "./components/pages/";
+import { default as Services } from "./components/pages/Services.jsx";
 
 function HomePage() {
   return (
@@ -16,6 +17,7 @@ function HomePage() {
         <Testimonials />
       </main>
       <Footer />
+      <CallButton />
     </>
   );
 }
@@ -27,7 +29,6 @@ function App() {
     const timer = setTimeout(() => {
       setLoading(false);
     }, 3000);
-
     return () => clearTimeout(timer);
   }, []);
 
@@ -41,8 +42,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/booking" element={<BookingPage />} />
-          {/* <Route path="/emergency" element={<EmergencyTowing />} />
-          <Route path="/services" element={<Services />} /> */}
+          <Route path="/services" element={<Services />} />
         </Routes>
       </div>
     </Router>

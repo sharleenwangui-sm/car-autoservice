@@ -145,7 +145,7 @@ export function Footer() {
         </div>
       </div>
 
-      {/* Emergency Towing Button */}
+      {/* Call Us Now Button */}
       <div className="fixed bottom-6 right-6 z-50">
         <Link
           to="/emergency"
@@ -159,7 +159,7 @@ export function Footer() {
             <MapPin className="w-4 h-4 text-primary" />
           </div>
           <span className="relative text-sm uppercase tracking-wider">
-            Emergency Towing
+            Call Us Now
           </span>
         </Link>
       </div>

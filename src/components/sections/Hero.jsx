@@ -96,7 +96,9 @@ export function Hero() {
                 Book Now
               </Button>
             </Link>
-            <Button variant="secondary">View Services</Button>
+            <Link to="/services">
+              <Button variant="secondary">View Services</Button>
+            </Link>
           </div>
         </div>
       </div>
