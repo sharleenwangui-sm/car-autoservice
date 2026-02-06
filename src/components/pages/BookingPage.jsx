@@ -6,10 +6,9 @@ import {
   X,
   Calendar,
   CheckCircle,
-  Shield,
   Phone,
 } from "lucide-react";
-import { Button, Card, Badge } from "../ui";
+import { Button, Card } from "../ui";
 
 const steps = [
   { id: 1, name: "Vehicle", label: "Vehicle" },
@@ -166,16 +165,13 @@ export function BookingPage() {
       {/* Header with Progress */}
       <header className="bg-white border-b sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <a href="/" className="flex items-center gap-2">
+          <div className="flex items-center justify-between h-20">
+            <a href="/" className="flex items-center">
               <img
-                src="/akwaaba-logo.svg"
+                src="/akwaaba-logo-cropped.png"
                 alt="Akwaaba Auto"
-                className="w-10 h-10"
+                className="h-14 w-auto sm:h-16 transition-transform hover:scale-105"
               />
-              <span className="text-xl font-bold text-gray-900">
-                AKWAABA AUTO
-              </span>
             </a>
 
             {/* Progress Steps */}
@@ -636,8 +632,6 @@ export function BookingPage() {
                   Confirm Appointment
                 </Button>
               </Card>
-
-              {/* Quality Guarantee */}
             </div>
           </div>
         </div>
@@ -647,13 +641,12 @@ export function BookingPage() {
       <footer className="bg-secondary mt-12 py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <a href="/" className="flex items-center gap-2">
+            <a href="/" className="flex items-center">
               <img
-                src="/akwaaba-logo.svg"
+                src="/akwaaba-logo-cropped.png"
                 alt="Akwaaba Auto"
-                className="w-10 h-10"
+                className="h-12 w-auto transition-transform hover:scale-105"
               />
-              <span className="text-xl font-bold text-white">AKWAABA AUTO</span>
             </a>
             <p className="text-gray-500 text-sm">
               © 2026 Akwaaba Auto. All rights reserved. Tell: +(254) 722334455

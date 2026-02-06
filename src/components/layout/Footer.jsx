@@ -123,24 +123,8 @@ export function Footer() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-gray-500 text-sm">
-              © 2026 Akwaaba Auto. All rights reserved. Tell: +(254) 722334455
+              © 2026 Akwaaba Auto. All rights reserved.
             </p>
-            <div className="flex items-center gap-6">
-              <a
-                href="tel:+254722334455"
-                className="flex items-center gap-2 text-gray-400 hover:text-white text-sm transition-colors"
-              >
-                <Phone className="w-4 h-4" />
-                +(254) 722334455
-              </a>
-              <a
-                href="#"
-                className="flex items-center gap-2 text-gray-400 hover:text-white text-sm transition-colors"
-              >
-                <MapPin className="w-4 h-4" />
-                892 Motor Drive
-              </a>
-            </div>
           </div>
         </div>
       </div>
