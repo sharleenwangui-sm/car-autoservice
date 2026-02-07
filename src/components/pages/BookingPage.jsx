@@ -606,7 +606,7 @@ export function BookingPage() {
 
                 {/* Services */}
                 <div className="mb-4">
-                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">
+                  <p className="text-xs text-gray-800 uppercase tracking-wider mb-2">
                     Selected Services
                   </p>
                   {formData.selectedServices.length > 0 ? (
@@ -620,7 +620,7 @@ export function BookingPage() {
                             key={serviceId}
                             className="flex justify-between text-sm"
                           >
-                            <span className="text-gray-300">
+                            <span className="text-gray-800">
                               {service?.name}
                             </span>
                             <span>
@@ -632,7 +632,7 @@ export function BookingPage() {
                       })}
                     </div>
                   ) : (
-                    <p className="text-gray-400 text-sm">
+                    <p className="text-gray-800 text-sm">
                       No services selected
                     </p>
                   )}
@@ -640,10 +640,10 @@ export function BookingPage() {
 
                 {/* Vehicle */}
                 <div className="mb-4">
-                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">
+                  <p className="text-xs text-gray-800 uppercase tracking-wider mb-1">
                     Vehicle
                   </p>
-                  <p className="font-semibold">
+                  <p className="font-semibold text-gray-800">
                     {formData.year && formData.make && formData.model
                       ? `${formData.year} ${formData.make} ${formData.model}`
                       : "Not selected"}
@@ -652,7 +652,7 @@ export function BookingPage() {
 
                 {/* Appointment */}
                 <div className="mb-6">
-                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">
+                  <p className="text-xs text-gray-800 uppercase tracking-wider mb-1">
                     Appointment
                   </p>
                   <div className="flex items-center gap-2 text-primary">
