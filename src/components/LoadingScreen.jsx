@@ -24,68 +24,41 @@ export function LoadingScreen() {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-gradient-to-br from-gray-900 via-gray-800 to-black">
-      <div className="flex flex-col items-center justify-center max-w-md mx-auto px-6">
+      <div className="flex flex-col items-center justify-center w-full max-w-md mx-auto px-6">
         {/* Logo Container */}
-        <div className="relative mb-12">
+        <div className="relative mb-8 sm:mb-12">
           <img
             src="new-akwaaba-logo.png"
             alt="Akwaaba Auto"
-            className="w-32 h-32 sm:w-40 sm:h-40 object-contain"
+            className="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 object-contain"
           />
         </div>
 
-        {/* Loading Progress */}
-        <div className="w-full space-y-8">
+        {/* Loading Progress Bar Only - Centered */}
+        <div className="w-full max-w-xs sm:max-w-sm mb-8 sm:mb-12">
           {/* Progress Bar */}
           <div className="relative w-full">
             {/* Background track */}
-            <div className="h-3 bg-gray-700 rounded-full overflow-hidden">
+            <div className="h-2 sm:h-3 bg-gray-700 rounded-full overflow-hidden">
               {/* Progress fill */}
               <div
                 className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-300 ease-out"
                 style={{ width: `${progress}%` }}
               />
             </div>
-
-            {/* Progress percentage */}
-            <div className="flex justify-end mt-3">
-              <span className="text-lg font-bold text-white">{progress}%</span>
-            </div>
-          </div>
-
-          {/* Loading dots animation */}
-          <div className="flex justify-center gap-2">
-            {[...Array(3)].map((_, i) => (
-              <div
-                key={i}
-                className="w-3 h-3 rounded-full bg-emerald-500"
-                style={{
-                  animation: `bounce 1.4s infinite ${i * 0.2}s`,
-                  opacity: progress > i * 33 ? 1 : 0.3,
-                }}
-              />
-            ))}
           </div>
         </div>
-        {/* Branding text */}
-        <div className="mt-12 text-base sm:text-lg md:text-xl text-gray-300 tracking-[0.3em] font-bold uppercase">
-          AKWAABA AUTO
+
+        {/* Big Branding Text - Centered and Responsive */}
+        <div className="text-center">
+          <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-wider uppercase mb-2">
+            AKWAABA
+          </div>
+          <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold text-emerald-400 tracking-wider uppercase">
+            AUTO
+          </div>
         </div>
       </div>
-
-      {/* CSS Animations */}
-      <style>{`
-        @keyframes bounce {
-          0%, 80%, 100% { 
-            transform: scale(0.8);
-            opacity: 0.5;
-          }
-          40% { 
-            transform: scale(1.1);
-            opacity: 1;
-          }
-        }
-      `}</style>
     </div>
   );
 }
