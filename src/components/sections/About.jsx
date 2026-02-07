@@ -172,7 +172,7 @@ export function About() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center mb-16 lg:mb-24">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-20 items-center mb-16 lg:mb-24">
           <div>
             <div className="inline-flex items-center gap-3 mb-4">
               <div className="w-8 h-0.5 bg-emerald-500"></div>
@@ -202,8 +202,11 @@ export function About() {
             </div>
           </div>
 
-          {/* Enhanced Stats Grid */}
-          <div ref={statsRef} className="grid grid-cols-2 gap-4 md:gap-6">
+          {/* FIXED: Enhanced Stats Grid - Now responsive */}
+          <div
+            ref={statsRef}
+            className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6"
+          >
             {stats.map((stat, index) => {
               const Icon = stat.icon;
               const numericValue = parseInt(stat.value.replace(/[^\d]/g, ""));
@@ -212,24 +215,24 @@ export function About() {
               return (
                 <div
                   key={index}
-                  className={`bg-white p-6 rounded-2xl border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-500 hover:-translate-y-1 ${
-                    index === 0 ? "col-span-2 md:col-span-1" : ""
-                  }`}
+                  className="bg-white p-4 sm:p-6 rounded-2xl border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-500 hover:-translate-y-1"
                   style={{
                     transitionDelay: `${stat.delay}ms`,
                   }}
                 >
-                  <div className="flex items-start gap-4">
+                  <div className="flex items-start gap-3 sm:gap-4">
                     <div
-                      className={`p-3 rounded-xl bg-${stat.color}-50 border border-${stat.color}-100`}
+                      className={`p-2 sm:p-3 rounded-xl bg-${stat.color}-50 border border-${stat.color}-100 flex-shrink-0`}
                     >
-                      <Icon className={`w-6 h-6 text-${stat.color}-600`} />
+                      <Icon
+                        className={`w-5 h-5 sm:w-6 sm:h-6 text-${stat.color}-600`}
+                      />
                     </div>
 
-                    <div>
-                      <div className="flex items-baseline gap-2">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-baseline gap-1 sm:gap-2">
                         <span
-                          className={`text-3xl md:text-4xl font-bold text-${stat.color}-600`}
+                          className={`text-2xl sm:text-3xl md:text-4xl font-bold text-${stat.color}-600`}
                         >
                           <ProgressiveCounter
                             target={stat.value}
@@ -238,17 +241,17 @@ export function About() {
                           />
                         </span>
                       </div>
-                      <h4 className="text-lg font-semibold text-gray-900 mt-2">
+                      <h4 className="text-base sm:text-lg font-semibold text-gray-900 mt-1 sm:mt-2">
                         {stat.label}
                       </h4>
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="text-xs sm:text-sm text-gray-500 mt-1">
                         {stat.description}
                       </p>
                     </div>
                   </div>
 
                   {/* Progress indicator */}
-                  <div className="mt-4 h-1 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="mt-3 sm:mt-4 h-1 bg-gray-100 rounded-full overflow-hidden">
                     <div
                       className={`h-full bg-gradient-to-r from-${stat.color}-500 to-${stat.color}-600 rounded-full transition-all duration-2000`}
                       style={{
