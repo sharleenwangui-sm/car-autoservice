@@ -33,22 +33,6 @@ const stats = [
     color: "amber",
     delay: 500,
   },
-  {
-    value: "10+",
-    label: "Years Experience",
-    description: "Decades of combined expertise",
-    icon: Award,
-    color: "blue",
-    delay: 700,
-  },
-  {
-    value: "500+",
-    label: "Restorations",
-    description: "Classic vehicles restored to perfection",
-    icon: TrendingUp,
-    color: "indigo",
-    delay: 900,
-  },
 ];
 
 const values = [

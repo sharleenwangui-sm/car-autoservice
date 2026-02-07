@@ -7,8 +7,11 @@ import {
   Calendar,
   CheckCircle,
   Phone,
+  ArrowLeft,
+  Download,
 } from "lucide-react";
 import { Button, Card } from "../ui";
+import { Link } from "react-router-dom";
 
 const services = [
   { id: "sales", name: "Pre-Owned Car Sales", price: 79.99 },
@@ -24,19 +27,38 @@ const steps = [
   { id: 3, name: "Schedule", label: "Schedule" },
   { id: 4, name: "Details", label: "Details" },
 ];
-const timeSlots = ["08:00 AM", "10:30 AM", "01:30 PM", "03:00 PM"];
 
+const timeSlots = ["08:00 AM", "10:30 AM", "01:30 PM", "03:00 PM"];
 const years = Array.from({ length: 30 }, (_, i) => 2024 - i);
 
+// Currency exchange rates (relative to USD)
+const currencies = {
+  USD: { symbol: "$", rate: 1, name: "US Dollar" },
+  KES: { symbol: "KSh", rate: 150, name: "Kenyan Shilling" },
+  EUR: { symbol: "€", rate: 0.92, name: "Euro" },
+  GBP: { symbol: "£", rate: 0.79, name: "British Pound" },
+};
+
 export function BookingPage() {
+  // <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  //   {/* Instructions Text */}
+  //   <div className="text-center mb-8 md:mb-12">
+  //     <p className="text-base sm:text-lg md:text-xl text-gray-700 font-medium">
+  //       Follow these steps to book your car service today
+  //     </p>
+  //   </div>
+  // </main>;
+
   const [currentStep, setCurrentStep] = useState(1);
-  const [currentMonth, setCurrentMonth] = useState(new Date(2024, 9)); // October 2024
+  const [currentMonth, setCurrentMonth] = useState(new Date(2024, 9));
+  const [selectedCurrency, setSelectedCurrency] = useState("USD");
+  const [showReceipt, setShowReceipt] = useState(false);
   const [formData, setFormData] = useState({
+    selectedServices: [],
     year: "",
     make: "",
     model: "",
     vin: "",
-    selectedServices: [],
     selectedDate: 4,
     selectedTime: "10:30 AM",
     fullName: "",
@@ -56,9 +78,9 @@ export function BookingPage() {
   const isStepComplete = (stepId) => {
     switch (stepId) {
       case 1:
-        return formData.year && formData.make && formData.model;
-      case 2:
         return formData.selectedServices.length > 0;
+      case 2:
+        return formData.year && formData.make && formData.model;
       case 3:
         return formData.selectedDate && formData.selectedTime;
       case 4:
@@ -73,25 +95,19 @@ export function BookingPage() {
     if (isStepComplete(1) && currentStep === 1) {
       setCurrentStep(2);
     }
-  }, [formData.year, formData.make, formData.model]);
+  }, [formData.selectedServices]);
 
   useEffect(() => {
     if (isStepComplete(2) && currentStep === 2) {
       setCurrentStep(3);
     }
-  }, [formData.selectedServices]);
+  }, [formData.year, formData.make, formData.model]);
 
   useEffect(() => {
     if (isStepComplete(3) && currentStep === 3) {
       setCurrentStep(4);
     }
   }, [formData.selectedDate, formData.selectedTime]);
-
-  useEffect(() => {
-    if (isStepComplete(4) && currentStep === 4) {
-      // All steps complete - could show confirmation state
-    }
-  }, [formData.fullName, formData.email, formData.phone]);
 
   // Scroll to section when step is clicked
   const scrollToSection = (stepId) => {
@@ -108,23 +124,15 @@ export function BookingPage() {
     const month = date.getMonth();
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-    // Adjust firstDay to start from Monday (0 = Monday, 6 = Sunday)
     const adjustedFirstDay = firstDay === 0 ? 6 : firstDay - 1;
-
     const days = [];
-
-    // Previous month days
     const prevMonthDays = new Date(year, month, 0).getDate();
     for (let i = adjustedFirstDay - 1; i >= 0; i--) {
       days.push({ day: prevMonthDays - i, currentMonth: false });
     }
-
-    // Current month days
     for (let i = 1; i <= daysInMonth; i++) {
       days.push({ day: i, currentMonth: true });
     }
-
     return days;
   };
 
@@ -144,6 +152,13 @@ export function BookingPage() {
     }, 0);
   };
 
+  const convertCurrency = (amount) => {
+    const rate = currencies[selectedCurrency].rate;
+    return (amount * rate).toFixed(2);
+  };
+
+  const getCurrencySymbol = () => currencies[selectedCurrency].symbol;
+
   const formatMonthYear = (date) => {
     return date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
   };
@@ -160,19 +175,46 @@ export function BookingPage() {
     );
   };
 
+  const handleConfirmBooking = () => {
+    if (
+      isStepComplete(1) &&
+      isStepComplete(2) &&
+      isStepComplete(3) &&
+      isStepComplete(4)
+    ) {
+      setShowReceipt(true);
+    }
+  };
+
+  const handlePrintReceipt = () => {
+    window.print();
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header with Progress */}
       <header className="bg-white border-b sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
-            <a href="/" className="flex items-center">
-              <img
-                src="/akwaaba-logo-cropped.png"
-                alt="Akwaaba Auto"
-                className="h-14 w-auto sm:h-16 transition-transform hover:scale-105"
-              />
-            </a>
+            {/* Back Button & Logo */}
+            <div className="flex items-center gap-3">
+              <Link
+                to="/"
+                className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-600 hover:text-gray-900"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                <span className="hidden sm:inline text-sm font-medium">
+                  Back
+                </span>
+              </Link>
+              <Link to="/" className="flex items-center">
+                <img
+                  src="/new-akwaaba-logo.png"
+                  alt="Akwaaba Auto"
+                  className="h-12 w-auto sm:h-14 transition-transform hover:scale-105"
+                />
+              </Link>
+            </div>
 
             {/* Progress Steps */}
             <div className="hidden md:flex items-center gap-2">
@@ -218,12 +260,20 @@ export function BookingPage() {
               ))}
             </div>
 
-            <a
-              href="/"
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <X className="w-5 h-5 text-gray-500" />
-            </a>
+            {/* Currency Selector */}
+            <div className="flex items-center gap-2">
+              <select
+                value={selectedCurrency}
+                onChange={(e) => setSelectedCurrency(e.target.value)}
+                className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primary transition-colors bg-white text-sm"
+              >
+                {Object.entries(currencies).map(([code, { name }]) => (
+                  <option key={code} value={code}>
+                    {code}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
       </header>
@@ -232,7 +282,7 @@ export function BookingPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Form Area */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Step 1: Vehicle Information */}
+            {/* Step 1: Select Services (NOW FIRST) */}
             <Card className="p-6 scroll-mt-24" ref={sectionRefs[1]}>
               <div className="flex items-center gap-3 mb-6">
                 <div
@@ -248,6 +298,59 @@ export function BookingPage() {
                     <CheckCircle className="w-5 h-5" />
                   ) : (
                     "1"
+                  )}
+                </div>
+                <h2 className="text-xl font-bold text-gray-900">
+                  Select Services
+                </h2>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {services.map((service) => (
+                  <label
+                    key={service.id}
+                    className={`flex items-center justify-between p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                      formData.selectedServices.includes(service.id)
+                        ? "border-primary bg-primary/5"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        checked={formData.selectedServices.includes(service.id)}
+                        onChange={() => toggleService(service.id)}
+                        className="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary"
+                      />
+                      <span className="font-medium text-gray-900 text-sm">
+                        {service.name}
+                      </span>
+                    </div>
+                    <span className="font-bold text-gray-900 text-sm">
+                      {getCurrencySymbol()}
+                      {convertCurrency(service.price)}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </Card>
+
+            {/* Step 2: Vehicle Information (NOW SECOND) */}
+            <Card className="p-6 scroll-mt-24" ref={sectionRefs[2]}>
+              <div className="flex items-center gap-3 mb-6">
+                <div
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                    isStepComplete(2)
+                      ? "bg-primary text-secondary"
+                      : currentStep >= 2
+                        ? "bg-primary text-secondary"
+                        : "bg-gray-200 text-gray-500"
+                  }`}
+                >
+                  {isStepComplete(2) ? (
+                    <CheckCircle className="w-5 h-5" />
+                  ) : (
+                    "2"
                   )}
                 </div>
                 <h2 className="text-xl font-bold text-gray-900">
@@ -317,58 +420,6 @@ export function BookingPage() {
                     className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primary transition-colors"
                   />
                 </div>
-              </div>
-            </Card>
-
-            {/* Step 2: Select Services */}
-            <Card className="p-6 scroll-mt-24" ref={sectionRefs[2]}>
-              <div className="flex items-center gap-3 mb-6">
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                    isStepComplete(2)
-                      ? "bg-primary text-secondary"
-                      : currentStep >= 2
-                        ? "bg-primary text-secondary"
-                        : "bg-gray-200 text-gray-500"
-                  }`}
-                >
-                  {isStepComplete(2) ? (
-                    <CheckCircle className="w-5 h-5" />
-                  ) : (
-                    "2"
-                  )}
-                </div>
-                <h2 className="text-xl font-bold text-gray-900">
-                  Select Services
-                </h2>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {services.map((service) => (
-                  <label
-                    key={service.id}
-                    className={`flex items-center justify-between p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                      formData.selectedServices.includes(service.id)
-                        ? "border-primary bg-primary/5"
-                        : "border-gray-200 hover:border-gray-300"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="checkbox"
-                        checked={formData.selectedServices.includes(service.id)}
-                        onChange={() => toggleService(service.id)}
-                        className="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary"
-                      />
-                      <span className="font-medium text-gray-900">
-                        {service.name}
-                      </span>
-                    </div>
-                    <span className="font-bold text-gray-900">
-                      ${service.price.toFixed(2)}
-                    </span>
-                  </label>
-                ))}
               </div>
             </Card>
 
@@ -553,18 +604,6 @@ export function BookingPage() {
                   <h3 className="font-bold text-lg">Booking Summary</h3>
                 </div>
 
-                {/* Vehicle */}
-                <div className="mb-4">
-                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">
-                    Vehicle
-                  </p>
-                  <p className="font-semibold">
-                    {formData.year && formData.make && formData.model
-                      ? `${formData.year} ${formData.make} ${formData.model}`
-                      : "Not selected"}
-                  </p>
-                </div>
-
                 {/* Services */}
                 <div className="mb-4">
                   <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">
@@ -584,7 +623,10 @@ export function BookingPage() {
                             <span className="text-gray-300">
                               {service?.name}
                             </span>
-                            <span>${service?.price.toFixed(2)}</span>
+                            <span>
+                              {getCurrencySymbol()}
+                              {convertCurrency(service?.price || 0)}
+                            </span>
                           </div>
                         );
                       })}
@@ -594,6 +636,18 @@ export function BookingPage() {
                       No services selected
                     </p>
                   )}
+                </div>
+
+                {/* Vehicle */}
+                <div className="mb-4">
+                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">
+                    Vehicle
+                  </p>
+                  <p className="font-semibold">
+                    {formData.year && formData.make && formData.model
+                      ? `${formData.year} ${formData.make} ${formData.model}`
+                      : "Not selected"}
+                  </p>
                 </div>
 
                 {/* Appointment */}
@@ -617,7 +671,8 @@ export function BookingPage() {
                       Estimated Total
                     </span>
                     <span className="text-3xl font-bold text-primary">
-                      ${getSelectedServicesTotal().toFixed(2)}
+                      {getCurrencySymbol()}
+                      {convertCurrency(getSelectedServicesTotal())}
                     </span>
                   </div>
                   <p className="text-xs text-gray-500 mt-1">
@@ -628,6 +683,7 @@ export function BookingPage() {
                 <Button
                   className="w-full py-4"
                   icon={<CheckCircle className="w-5 h-5" />}
+                  onClick={handleConfirmBooking}
                 >
                   Confirm Appointment
                 </Button>
@@ -637,24 +693,163 @@ export function BookingPage() {
         </div>
       </main>
 
+      {/* Receipt Modal */}
+      {showReceipt && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">Receipt</h2>
+                <button
+                  onClick={() => setShowReceipt(false)}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5 text-gray-500" />
+                </button>
+              </div>
+
+              {/* Receipt Content */}
+              <div className="space-y-6">
+                {/* Logo */}
+                <div className="text-center border-b pb-4">
+                  <img
+                    src="/new-akwaaba-logo.png"
+                    alt="Akwaaba Auto"
+                    className="h-16 w-auto mx-auto mb-2"
+                  />
+                  <p className="text-sm text-gray-600">Booking Confirmation</p>
+                  <p className="text-xs text-gray-500">
+                    Confirmation #
+                    {Math.random().toString(36).substr(2, 9).toUpperCase()}
+                  </p>
+                </div>
+
+                {/* Customer Details */}
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-2">
+                    Customer Details
+                  </h3>
+                  <div className="space-y-1 text-sm">
+                    <p className="text-gray-600">
+                      Name:{" "}
+                      <span className="text-gray-900 font-medium">
+                        {formData.fullName}
+                      </span>
+                    </p>
+                    <p className="text-gray-600">
+                      Email:{" "}
+                      <span className="text-gray-900 font-medium">
+                        {formData.email}
+                      </span>
+                    </p>
+                    <p className="text-gray-600">
+                      Phone:{" "}
+                      <span className="text-gray-900 font-medium">
+                        {formData.phone}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+
+                {/* Vehicle */}
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-2">Vehicle</h3>
+                  <p className="text-sm text-gray-900 font-medium">
+                    {formData.year} {formData.make} {formData.model}
+                  </p>
+                  {formData.vin && (
+                    <p className="text-xs text-gray-600">VIN: {formData.vin}</p>
+                  )}
+                </div>
+
+                {/* Appointment */}
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-2">
+                    Appointment
+                  </h3>
+                  <p className="text-sm text-gray-900 font-medium">
+                    October {formData.selectedDate}, 2024
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {formData.selectedTime}
+                  </p>
+                </div>
+
+                {/* Services */}
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-3">Services</h3>
+                  <div className="space-y-2">
+                    {formData.selectedServices.map((serviceId) => {
+                      const service = services.find((s) => s.id === serviceId);
+                      return (
+                        <div
+                          key={serviceId}
+                          className="flex justify-between text-sm"
+                        >
+                          <span className="text-gray-700">{service?.name}</span>
+                          <span className="text-gray-900 font-medium">
+                            {getCurrencySymbol()}
+                            {convertCurrency(service?.price || 0)}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Total */}
+                <div className="border-t pt-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg font-bold text-gray-900">
+                      Total
+                    </span>
+                    <span className="text-2xl font-bold text-primary">
+                      {getCurrencySymbol()}
+                      {convertCurrency(getSelectedServicesTotal())}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1 text-right">
+                    Currency: {currencies[selectedCurrency].name}
+                  </p>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-3 pt-4">
+                  <Button
+                    className="flex-1"
+                    onClick={handlePrintReceipt}
+                    icon={<Download className="w-4 h-4" />}
+                  >
+                    Print/Save
+                  </Button>
+                  <Button
+                    className="flex-1 bg-gray-200 text-gray-900 hover:bg-gray-300"
+                    onClick={() => setShowReceipt(false)}
+                  >
+                    Close
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Footer */}
       <footer className="bg-secondary mt-12 py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <a href="/" className="flex items-center">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-8">
+            <Link to="/" className="flex items-center">
               <img
-                src="/akwaaba-logo-cropped.png"
+                src="/new-akwaaba-logo.png"
                 alt="Akwaaba Auto"
                 className="h-12 w-auto transition-transform hover:scale-105"
               />
-            </a>
-            <p className="text-gray-500 text-sm">
-              © 2026 Akwaaba Auto. All rights reserved. Tell: +(254) 722334455
+            </Link>
+            <p className="text-gray-500 text-sm text-center">
+              © 2026 Akwaaba Auto. All rights reserved. Tel: +(254) 722334455
             </p>
-            <a
-              href="tel:+254722334455"
-              className="flex items-center gap-2 text-gray-400 hover:text-white text-sm transition-colors"
-            ></a>
           </div>
         </div>
       </footer>

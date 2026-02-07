@@ -27,9 +27,9 @@ export function Footer() {
           <div>
             <Link to="/" className="flex items-center gap-2 mb-4">
               <img
-                src="/akwaaba-logo-cropped.png"
+                src="/new-akwaaba-logo.png"
                 alt="Akwaaba Auto"
-                className="w-10 h-10"
+                className="w-16 h-16 sm:w-20 sm:h-20 object-contain"
               />
               {/* <span className="text-xl font-bold">AKWAABA AUTO</span> */}
             </Link>
@@ -39,16 +39,13 @@ export function Footer() {
               needs.
             </p>
             <div className="flex gap-3">
-              <a
-                href="#"
-                className="w-10 h-10 bg-gray-dark hover:bg-gray-700 rounded-full flex items-center justify-center transition-colors"
-              >
+              <a>
+                {" "}
                 <Globe className="w-5 h-5" />
               </a>
-              <a
-                href="#"
-                className="w-10 h-10 bg-gray-dark hover:bg-gray-700 rounded-full flex items-center justify-center transition-colors"
-              >
+
+              <a>
+                {" "}
                 <Share2 className="w-5 h-5" />
               </a>
             </div>

@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { LoadingScreen } from "./components/LoadingScreen";
 import { Header, Footer } from "./components/layout";
-import { Hero, ServiceCards, About, Testimonials } from "./components/sections";
+import { Hero, ServiceCards, About } from "./components/sections";
 import { BookingPage, CallButton } from "./components/pages/";
 import { default as Services } from "./components/sections/Services.jsx";
 
@@ -15,7 +15,7 @@ function HomePage() {
         <ServiceCards />
         <About />
         <Services />
-        <Testimonials />
+        {/* <Testimonials /> */}
       </main>
       <Footer />
       <CallButton />
