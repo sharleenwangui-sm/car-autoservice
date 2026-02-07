@@ -36,7 +36,7 @@ const currencies = {
   USD: { symbol: "$", rate: 1, name: "US Dollar" },
   KES: { symbol: "KSh", rate: 150, name: "Kenyan Shilling" },
   EUR: { symbol: "€", rate: 0.92, name: "Euro" },
-  GBP: { symbol: "£", rate: 0.79, name: "British Pound" },git
+  GBP: { symbol: "£", rate: 0.79, name: "British Pound" },
 };
 
 export function BookingPage() {
