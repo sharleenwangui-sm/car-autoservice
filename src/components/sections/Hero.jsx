@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 import { Button, Badge } from "../ui";
 
@@ -41,6 +41,8 @@ const slides = [
 
 export function Hero() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -55,6 +57,36 @@ export function Hero() {
 
   const prevSlide = () => {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+  };
+
+  const handleViewServices = (e) => {
+    e.preventDefault();
+
+    // If not on homepage, navigate to homepage first
+    if (location.pathname !== "/") {
+      navigate("/");
+      // Wait for navigation to complete, then scroll
+      setTimeout(() => {
+        scrollToServices();
+      }, 300);
+    } else {
+      scrollToServices();
+    }
+  };
+
+  const scrollToServices = () => {
+    const element = document.querySelector("#services");
+    if (element) {
+      const headerOffset = 112;
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition =
+        elementPosition + window.pageYOffset - headerOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      });
+    }
   };
 
   const slide = slides[currentSlide];
@@ -96,9 +128,9 @@ export function Hero() {
                 Book Now
               </Button>
             </Link>
-            <Link to="/services">
+            <a href="#services" onClick={handleViewServices}>
               <Button variant="secondary">View Services</Button>
-            </Link>
+            </a>
           </div>
         </div>
       </div>
