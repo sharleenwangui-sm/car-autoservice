@@ -6,7 +6,6 @@ import { Button } from "../ui";
 const navLinks = [
   { name: "Services", href: "#services", type: "scroll" },
   { name: "About Us", href: "#about", type: "scroll" },
-  // { name: "Testimonials", href: "#testimonials", type: "scroll" },
 ];
 
 export function Header() {
@@ -18,26 +17,29 @@ export function Header() {
     if (link.type === "scroll") {
       e.preventDefault();
 
+      // Close menu first
+      setIsMenuOpen(false);
+
       // If not on homepage, navigate to homepage first
       if (location.pathname !== "/") {
         navigate("/");
         // Wait for navigation to complete, then scroll
         setTimeout(() => {
           scrollToSection(link.href);
-        }, 100);
+        }, 300);
       } else {
-        // Already on homepage, just scroll
-        scrollToSection(link.href);
+        // Already on homepage, wait for menu to close then scroll
+        setTimeout(() => {
+          scrollToSection(link.href);
+        }, 100);
       }
-
-      setIsMenuOpen(false);
     }
   };
 
   const scrollToSection = (href) => {
     const element = document.querySelector(href);
     if (element) {
-      const headerOffset = 96; // Updated for larger header height
+      const headerOffset = 112;
       const elementPosition = element.getBoundingClientRect().top;
       const offsetPosition =
         elementPosition + window.pageYOffset - headerOffset;
@@ -46,6 +48,8 @@ export function Header() {
         top: offsetPosition,
         behavior: "smooth",
       });
+    } else {
+      console.error(`Element with selector ${href} not found`);
     }
   };
 
