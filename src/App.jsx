@@ -43,6 +43,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/booking" element={<BookingPage />} />
+          <Route path="/booking/:serviceId" element={<BookingPage />} />
         </Routes>
       </div>
     </Router>

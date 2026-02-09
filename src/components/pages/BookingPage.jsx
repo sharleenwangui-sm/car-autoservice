@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   Car,
   ChevronLeft,
@@ -6,52 +7,55 @@ import {
   X,
   Calendar,
   CheckCircle,
-  Phone,
   ArrowLeft,
   Download,
 } from "lucide-react";
 import { Button, Card } from "../ui";
-import { Link } from "react-router-dom";
-
-const services = [
-  { id: "sales", name: "Pre-Owned Car Sales", price: 79.99 },
-  { id: "restore", name: "Car restoration", price: 189.0 },
-  { id: "detail", name: "Car Detailing", price: 45.0 },
-  { id: "repair", name: "Car Repair & Servicing", price: 29.99 },
-  { id: "parts", name: "Car Parts Sales (On-Site & Online)", price: 29.99 },
-];
-
-const steps = [
-  { id: 1, name: "Services", label: "Services" },
-  { id: 2, name: "Vehicle", label: "Vehicle" },
-  { id: 3, name: "Schedule", label: "Schedule" },
-  { id: 4, name: "Details", label: "Details" },
-];
-
-const timeSlots = ["08:00 AM", "10:30 AM", "01:30 PM", "03:00 PM"];
-const years = Array.from({ length: 30 }, (_, i) => 2024 - i);
-
-// Currency exchange rates (relative to USD)
-const currencies = {
-  USD: { symbol: "$", rate: 1, name: "US Dollar" },
-  KES: { symbol: "KSh", rate: 150, name: "Kenyan Shilling" },
-  EUR: { symbol: "€", rate: 0.92, name: "Euro" },
-  GBP: { symbol: "£", rate: 0.79, name: "British Pound" },
-};
+// CORRECTED IMPORT - Remove .js extension
+import { serviceData } from "../data/service";
 
 export function BookingPage() {
-  // <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  //   {/* Instructions Text */}
-  //   <div className="text-center mb-8 md:mb-12">
-  //     <p className="text-base sm:text-lg md:text-xl text-gray-700 font-medium">
-  //       Follow these steps to book your car service today
-  //     </p>
-  //   </div>
-  // </main>;
+  const { serviceId } = useParams();
+  const navigate = useNavigate();
+
+  // Helper function to safely extract price as number
+  const extractPrice = (priceString) => {
+    if (typeof priceString === "number") return priceString;
+    if (!priceString) return 0;
+
+    // Remove all non-numeric characters except decimal point
+    const numericPrice = priceString.toString().replace(/[^0-9.]/g, "");
+    const price = parseFloat(numericPrice);
+    return isNaN(price) ? 0 : price;
+  };
+
+  // Map serviceData with proper price extraction
+  const services = serviceData.map((service) => ({
+    id: service.id.toString(),
+    name: service.name,
+    price: extractPrice(service.price),
+  }));
+
+  const steps = [
+    { id: 1, name: "Services", label: "Services" },
+    { id: 2, name: "Vehicle", label: "Vehicle" },
+    { id: 3, name: "Schedule", label: "Schedule" },
+    { id: 4, name: "Details", label: "Details" },
+  ];
+
+  const timeSlots = ["08:00 AM", "10:30 AM", "01:30 PM", "03:00 PM"];
+  const years = Array.from({ length: 30 }, (_, i) => 2024 - i);
+
+  const currencies = {
+    USD: { symbol: "$", rate: 1, name: "US Dollar" },
+    KES: { symbol: "KSh", rate: 150, name: "Kenyan Shilling" },
+    EUR: { symbol: "€", rate: 0.92, name: "Euro" },
+    GBP: { symbol: "£", rate: 0.79, name: "British Pound" },
+  };
 
   const [currentStep, setCurrentStep] = useState(1);
   const [currentMonth, setCurrentMonth] = useState(new Date(2024, 9));
-  const [selectedCurrency, setSelectedCurrency] = useState("USD");
+  const [selectedCurrency, setSelectedCurrency] = useState("KES");
   const [showReceipt, setShowReceipt] = useState(false);
   const [formData, setFormData] = useState({
     selectedServices: [],
@@ -66,7 +70,19 @@ export function BookingPage() {
     phone: "",
   });
 
-  // Refs for each section
+  // Pre-select service from URL
+  useEffect(() => {
+    if (serviceId) {
+      const serviceExists = services.find((s) => s.id === serviceId);
+      if (serviceExists) {
+        setFormData((prev) => ({
+          ...prev,
+          selectedServices: [serviceId],
+        }));
+      }
+    }
+  }, [serviceId]);
+
   const sectionRefs = {
     1: useRef(null),
     2: useRef(null),
@@ -74,7 +90,6 @@ export function BookingPage() {
     4: useRef(null),
   };
 
-  // Check if step is complete
   const isStepComplete = (stepId) => {
     switch (stepId) {
       case 1:
@@ -90,32 +105,23 @@ export function BookingPage() {
     }
   };
 
-  // Auto-advance to next step when current step is completed
   useEffect(() => {
-    if (isStepComplete(1) && currentStep === 1) {
-      setCurrentStep(2);
-    }
+    if (isStepComplete(1) && currentStep === 1) setCurrentStep(2);
   }, [formData.selectedServices]);
 
   useEffect(() => {
-    if (isStepComplete(2) && currentStep === 2) {
-      setCurrentStep(3);
-    }
+    if (isStepComplete(2) && currentStep === 2) setCurrentStep(3);
   }, [formData.year, formData.make, formData.model]);
 
   useEffect(() => {
-    if (isStepComplete(3) && currentStep === 3) {
-      setCurrentStep(4);
-    }
+    if (isStepComplete(3) && currentStep === 3) setCurrentStep(4);
   }, [formData.selectedDate, formData.selectedTime]);
 
-  // Scroll to section when step is clicked
   const scrollToSection = (stepId) => {
     setCurrentStep(stepId);
     sectionRefs[stepId]?.current?.scrollIntoView({
       behavior: "smooth",
       block: "start",
-      inline: "nearest",
     });
   };
 
@@ -127,6 +133,7 @@ export function BookingPage() {
     const adjustedFirstDay = firstDay === 0 ? 6 : firstDay - 1;
     const days = [];
     const prevMonthDays = new Date(year, month, 0).getDate();
+
     for (let i = adjustedFirstDay - 1; i >= 0; i--) {
       days.push({ day: prevMonthDays - i, currentMonth: false });
     }
@@ -152,9 +159,16 @@ export function BookingPage() {
     }, 0);
   };
 
+  // IMPROVED: Format currency with proper thousand separators
   const convertCurrency = (amount) => {
     const rate = currencies[selectedCurrency].rate;
-    return (amount * rate).toFixed(2);
+    const convertedAmount = amount * rate;
+
+    // Format with commas for thousands
+    return convertedAmount.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
   };
 
   const getCurrencySymbol = () => currencies[selectedCurrency].symbol;
@@ -192,17 +206,17 @@ export function BookingPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header with Progress */}
-      <header className="bg-white border-b sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
+      {/* Header */}
+      <header className="bg-white border-b sticky top-0 z-50 shadow-sm">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
+          <div className="flex items-center justify-between h-16 sm:h-20">
             {/* Back Button & Logo */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <Link
                 to="/"
-                className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-600 hover:text-gray-900"
+                className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-600 hover:text-gray-900"
               >
-                <ArrowLeft className="w-5 h-5" />
+                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                 <span className="hidden sm:inline text-sm font-medium">
                   Back
                 </span>
@@ -211,13 +225,13 @@ export function BookingPage() {
                 <img
                   src="/new-akwaaba-logo.png"
                   alt="Akwaaba Auto"
-                  className="h-12 w-auto sm:h-14 transition-transform hover:scale-105"
+                  className="h-10 w-auto sm:h-12 md:h-14"
                 />
               </Link>
             </div>
 
-            {/* Progress Steps */}
-            <div className="hidden md:flex items-center gap-2">
+            {/* Progress Steps - Hidden on small screens */}
+            <div className="hidden lg:flex items-center gap-2">
               {steps.map((step, index) => (
                 <div key={step.id} className="flex items-center">
                   <button
@@ -265,9 +279,9 @@ export function BookingPage() {
               <select
                 value={selectedCurrency}
                 onChange={(e) => setSelectedCurrency(e.target.value)}
-                className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primary transition-colors bg-white text-sm"
+                className="px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primary transition-colors bg-white text-xs sm:text-sm"
               >
-                {Object.entries(currencies).map(([code, { name }]) => (
+                {Object.entries(currencies).map(([code]) => (
                   <option key={code} value={code}>
                     {code}
                   </option>
@@ -278,20 +292,48 @@ export function BookingPage() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      {/* Mobile Progress Indicator */}
+      <div className="lg:hidden bg-white border-b px-4 py-3">
+        <div className="flex justify-between items-center max-w-7xl mx-auto">
+          {steps.map((step) => (
+            <button
+              key={step.id}
+              onClick={() => scrollToSection(step.id)}
+              className="flex flex-col items-center gap-1"
+            >
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
+                  isStepComplete(step.id)
+                    ? "bg-primary text-secondary"
+                    : currentStep >= step.id
+                      ? "bg-primary text-secondary"
+                      : "bg-gray-200 text-gray-500"
+                }`}
+              >
+                {isStepComplete(step.id) ? (
+                  <CheckCircle className="w-4 h-4" />
+                ) : (
+                  step.id
+                )}
+              </div>
+              <span className="text-xs text-gray-600">{step.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <main className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-6 sm:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Main Form Area */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Step 1: Select Services (NOW FIRST) */}
-            <Card className="p-6 scroll-mt-24" ref={sectionRefs[1]}>
-              <div className="flex items-center gap-3 mb-6">
+          <div className="lg:col-span-2 space-y-6 sm:space-y-8">
+            {/* Step 1: Select Services */}
+            <Card className="p-4 sm:p-6 scroll-mt-24" ref={sectionRefs[1]}>
+              <div className="flex items-center gap-3 mb-4 sm:mb-6">
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                  className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-sm font-bold ${
                     isStepComplete(1)
                       ? "bg-primary text-secondary"
-                      : currentStep >= 1
-                        ? "bg-primary text-secondary"
-                        : "bg-gray-200 text-gray-500"
+                      : "bg-gray-200 text-gray-500"
                   }`}
                 >
                   {isStepComplete(1) ? (
@@ -300,33 +342,33 @@ export function BookingPage() {
                     "1"
                   )}
                 </div>
-                <h2 className="text-xl font-bold text-gray-900">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900">
                   Select Services
                 </h2>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 {services.map((service) => (
                   <label
                     key={service.id}
-                    className={`flex items-center justify-between p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                    className={`flex items-center justify-between p-3 sm:p-4 border-2 rounded-lg cursor-pointer transition-all ${
                       formData.selectedServices.includes(service.id)
                         ? "border-primary bg-primary/5"
                         : "border-gray-200 hover:border-gray-300"
                     }`}
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
                       <input
                         type="checkbox"
                         checked={formData.selectedServices.includes(service.id)}
                         onChange={() => toggleService(service.id)}
-                        className="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary"
+                        className="w-4 h-4 sm:w-5 sm:h-5 rounded border-gray-300 text-primary focus:ring-primary flex-shrink-0"
                       />
-                      <span className="font-medium text-gray-900 text-sm">
+                      <span className="font-medium text-gray-900 text-xs sm:text-sm truncate">
                         {service.name}
                       </span>
                     </div>
-                    <span className="font-bold text-gray-900 text-sm">
+                    <span className="font-bold text-gray-900 text-xs sm:text-sm ml-2 flex-shrink-0">
                       {getCurrencySymbol()}
                       {convertCurrency(service.price)}
                     </span>
@@ -335,16 +377,14 @@ export function BookingPage() {
               </div>
             </Card>
 
-            {/* Step 2: Vehicle Information (NOW SECOND) */}
-            <Card className="p-6 scroll-mt-24" ref={sectionRefs[2]}>
-              <div className="flex items-center gap-3 mb-6">
+            {/* Step 2: Vehicle Information */}
+            <Card className="p-4 sm:p-6 scroll-mt-24" ref={sectionRefs[2]}>
+              <div className="flex items-center gap-3 mb-4 sm:mb-6">
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                  className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-sm font-bold ${
                     isStepComplete(2)
                       ? "bg-primary text-secondary"
-                      : currentStep >= 2
-                        ? "bg-primary text-secondary"
-                        : "bg-gray-200 text-gray-500"
+                      : "bg-gray-200 text-gray-500"
                   }`}
                 >
                   {isStepComplete(2) ? (
@@ -353,14 +393,14 @@ export function BookingPage() {
                     "2"
                   )}
                 </div>
-                <h2 className="text-xl font-bold text-gray-900">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900">
                   Vehicle Information
                 </h2>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 uppercase tracking-wider mb-2">
+                  <label className="block text-xs sm:text-sm font-semibold text-gray-900 uppercase tracking-wider mb-2">
                     Year
                   </label>
                   <select
@@ -368,7 +408,7 @@ export function BookingPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, year: e.target.value })
                     }
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primary transition-colors bg-white"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primary transition-colors bg-white text-sm"
                   >
                     <option value="">Select Year</option>
                     {years.map((year) => (
@@ -379,7 +419,7 @@ export function BookingPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 uppercase tracking-wider mb-2">
+                  <label className="block text-xs sm:text-sm font-semibold text-gray-900 uppercase tracking-wider mb-2">
                     Make
                   </label>
                   <input
@@ -389,11 +429,11 @@ export function BookingPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, make: e.target.value })
                     }
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primary transition-colors"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primary transition-colors text-sm"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 uppercase tracking-wider mb-2">
+                  <label className="block text-xs sm:text-sm font-semibold text-gray-900 uppercase tracking-wider mb-2">
                     Model
                   </label>
                   <input
@@ -403,36 +443,34 @@ export function BookingPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, model: e.target.value })
                     }
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primary transition-colors"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primary transition-colors text-sm"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 uppercase tracking-wider mb-2">
+                  <label className="block text-xs sm:text-sm font-semibold text-gray-900 uppercase tracking-wider mb-2">
                     VIN (Optional)
                   </label>
                   <input
                     type="text"
-                    placeholder="Vehicle Identification Number"
+                    placeholder="Vehicle ID"
                     value={formData.vin}
                     onChange={(e) =>
                       setFormData({ ...formData, vin: e.target.value })
                     }
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primary transition-colors"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primary transition-colors text-sm"
                   />
                 </div>
               </div>
             </Card>
 
-            {/* Step 3: Choose Date & Time */}
-            <Card className="p-6 scroll-mt-24" ref={sectionRefs[3]}>
-              <div className="flex items-center gap-3 mb-6">
+            {/* Step 3: Date & Time */}
+            <Card className="p-4 sm:p-6 scroll-mt-24" ref={sectionRefs[3]}>
+              <div className="flex items-center gap-3 mb-4 sm:mb-6">
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                  className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-sm font-bold ${
                     isStepComplete(3)
                       ? "bg-primary text-secondary"
-                      : currentStep >= 3
-                        ? "bg-primary text-secondary"
-                        : "bg-gray-200 text-gray-500"
+                      : "bg-gray-200 text-gray-500"
                   }`}
                 >
                   {isStepComplete(3) ? (
@@ -441,16 +479,15 @@ export function BookingPage() {
                     "3"
                   )}
                 </div>
-                <h2 className="text-xl font-bold text-gray-900">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900">
                   Choose Date & Time
                 </h2>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Calendar */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-semibold text-gray-900">
+                    <h3 className="font-semibold text-gray-900 text-sm sm:text-base">
                       {formatMonthYear(currentMonth)}
                     </h3>
                     <div className="flex gap-1">
@@ -458,18 +495,18 @@ export function BookingPage() {
                         onClick={prevMonth}
                         className="p-1 hover:bg-gray-100 rounded transition-colors"
                       >
-                        <ChevronLeft className="w-5 h-5 text-gray-600" />
+                        <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
                       </button>
                       <button
                         onClick={nextMonth}
                         className="p-1 hover:bg-gray-100 rounded transition-colors"
                       >
-                        <ChevronRight className="w-5 h-5 text-gray-600" />
+                        <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
                       </button>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-7 gap-1 text-center text-sm">
+                  <div className="grid grid-cols-7 gap-1 text-center text-xs sm:text-sm">
                     {["M", "T", "W", "T", "F", "S", "S"].map((day, i) => (
                       <div key={i} className="py-2 font-medium text-gray-500">
                         {day}
@@ -483,7 +520,7 @@ export function BookingPage() {
                           setFormData({ ...formData, selectedDate: item.day })
                         }
                         disabled={!item.currentMonth}
-                        className={`py-2 rounded-lg text-sm transition-colors ${
+                        className={`py-2 rounded-lg text-xs sm:text-sm transition-colors ${
                           !item.currentMonth
                             ? "text-gray-300"
                             : formData.selectedDate === item.day
@@ -497,19 +534,18 @@ export function BookingPage() {
                   </div>
                 </div>
 
-                {/* Time Slots */}
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-4">
+                  <h3 className="font-semibold text-gray-900 mb-4 text-sm sm:text-base">
                     Available Slots
                   </h3>
-                  <div className="space-y-3">
+                  <div className="space-y-2 sm:space-y-3">
                     {timeSlots.map((time) => (
                       <button
                         key={time}
                         onClick={() =>
                           setFormData({ ...formData, selectedTime: time })
                         }
-                        className={`w-full py-3 px-4 rounded-lg border-2 text-sm font-medium transition-all ${
+                        className={`w-full py-2 sm:py-3 px-3 sm:px-4 rounded-lg border-2 text-xs sm:text-sm font-medium transition-all ${
                           formData.selectedTime === time
                             ? "border-primary bg-primary text-secondary"
                             : "border-gray-200 text-gray-700 hover:border-gray-300"
@@ -524,15 +560,13 @@ export function BookingPage() {
             </Card>
 
             {/* Step 4: Contact Details */}
-            <Card className="p-6 scroll-mt-24" ref={sectionRefs[4]}>
-              <div className="flex items-center gap-3 mb-6">
+            <Card className="p-4 sm:p-6 scroll-mt-24" ref={sectionRefs[4]}>
+              <div className="flex items-center gap-3 mb-4 sm:mb-6">
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                  className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-sm font-bold ${
                     isStepComplete(4)
                       ? "bg-primary text-secondary"
-                      : currentStep >= 4
-                        ? "bg-primary text-secondary"
-                        : "bg-gray-200 text-gray-500"
+                      : "bg-gray-200 text-gray-500"
                   }`}
                 >
                   {isStepComplete(4) ? (
@@ -541,14 +575,14 @@ export function BookingPage() {
                     "4"
                   )}
                 </div>
-                <h2 className="text-xl font-bold text-gray-900">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900">
                   Contact Details
                 </h2>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 uppercase tracking-wider mb-2">
+                  <label className="block text-xs sm:text-sm font-semibold text-gray-900 uppercase tracking-wider mb-2">
                     Full Name
                   </label>
                   <input
@@ -558,12 +592,12 @@ export function BookingPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, fullName: e.target.value })
                     }
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primary transition-colors"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primary transition-colors text-sm"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 uppercase tracking-wider mb-2">
-                    Email Address
+                  <label className="block text-xs sm:text-sm font-semibold text-gray-900 uppercase tracking-wider mb-2">
+                    Email
                   </label>
                   <input
                     type="email"
@@ -572,11 +606,11 @@ export function BookingPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, email: e.target.value })
                     }
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primary transition-colors"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primary transition-colors text-sm"
                   />
                 </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-semibold text-gray-900 uppercase tracking-wider mb-2">
+                <div className="sm:col-span-2">
+                  <label className="block text-xs sm:text-sm font-semibold text-gray-900 uppercase tracking-wider mb-2">
                     Phone Number
                   </label>
                   <input
@@ -586,7 +620,7 @@ export function BookingPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, phone: e.target.value })
                     }
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primary transition-colors"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-200 rounded-lg focus:outline-none focus:border-primary transition-colors text-sm"
                   />
                 </div>
               </div>
@@ -595,13 +629,15 @@ export function BookingPage() {
 
           {/* Booking Summary Sidebar */}
           <div className="lg:col-span-1">
-            <div className="sticky top-24">
-              <Card className="bg-secondary text-white p-6">
-                <div className="flex items-center gap-2 mb-6">
-                  <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+            <div className="sticky top-20 sm:top-24">
+              <Card className="bg-secondary text-white p-4 sm:p-6">
+                <div className="flex items-center gap-2 mb-4 sm:mb-6">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 bg-primary rounded-lg flex items-center justify-center">
                     <Car className="w-4 h-4 text-secondary" />
                   </div>
-                  <h3 className="font-bold text-lg">Booking Summary</h3>
+                  <h3 className="font-bold text-base sm:text-lg">
+                    Booking Summary
+                  </h3>
                 </div>
 
                 {/* Services */}
@@ -618,12 +654,12 @@ export function BookingPage() {
                         return (
                           <div
                             key={serviceId}
-                            className="flex justify-between text-sm"
+                            className="flex justify-between text-xs sm:text-sm"
                           >
-                            <span className="text-gray-800">
+                            <span className="text-gray-800 truncate mr-2">
                               {service?.name}
                             </span>
-                            <span>
+                            <span className="flex-shrink-0">
                               {getCurrencySymbol()}
                               {convertCurrency(service?.price || 0)}
                             </span>
@@ -632,7 +668,7 @@ export function BookingPage() {
                       })}
                     </div>
                   ) : (
-                    <p className="text-gray-800 text-sm">
+                    <p className="text-gray-800 text-xs sm:text-sm">
                       No services selected
                     </p>
                   )}
@@ -643,7 +679,7 @@ export function BookingPage() {
                   <p className="text-xs text-gray-800 uppercase tracking-wider mb-1">
                     Vehicle
                   </p>
-                  <p className="font-semibold text-gray-800">
+                  <p className="font-semibold text-gray-800 text-xs sm:text-sm">
                     {formData.year && formData.make && formData.model
                       ? `${formData.year} ${formData.make} ${formData.model}`
                       : "Not selected"}
@@ -651,13 +687,13 @@ export function BookingPage() {
                 </div>
 
                 {/* Appointment */}
-                <div className="mb-6">
+                <div className="mb-4 sm:mb-6">
                   <p className="text-xs text-gray-800 uppercase tracking-wider mb-1">
                     Appointment
                   </p>
                   <div className="flex items-center gap-2 text-primary">
-                    <Calendar className="w-4 h-4" />
-                    <span className="font-semibold">
+                    <Calendar className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                    <span className="font-semibold text-xs sm:text-sm">
                       Oct {formData.selectedDate}, 2024 at{" "}
                       {formData.selectedTime}
                     </span>
@@ -665,24 +701,29 @@ export function BookingPage() {
                 </div>
 
                 {/* Total */}
-                <div className="border-t border-gray-700 pt-4 mb-6">
+                <div className="border-t border-gray-700 pt-4 mb-4 sm:mb-6">
                   <div className="flex items-baseline justify-between">
                     <span className="text-xs text-gray-400 uppercase tracking-wider">
                       Estimated Total
                     </span>
-                    <span className="text-3xl font-bold text-primary">
-                      {getCurrencySymbol()}
-                      {convertCurrency(getSelectedServicesTotal())}
-                    </span>
+                    <div className="text-right">
+                      <span className="text-2xl sm:text-3xl font-bold text-primary block">
+                        {getCurrencySymbol()}
+                        {convertCurrency(getSelectedServicesTotal())}
+                      </span>
+                      <span className="text-xs text-gray-500 mt-0.5 block">
+                        {currencies[selectedCurrency].name}
+                      </span>
+                    </div>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-gray-500 mt-2">
                     Plus applicable taxes and optional fees.
                   </p>
                 </div>
 
                 <Button
-                  className="w-full py-4"
-                  icon={<CheckCircle className="w-5 h-5" />}
+                  className="w-full py-3 sm:py-4 text-sm sm:text-base"
+                  icon={<CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" />}
                   onClick={handleConfirmBooking}
                 >
                   Confirm Appointment
@@ -693,14 +734,15 @@ export function BookingPage() {
         </div>
       </main>
 
-      {/* Receipt Modal */}
+      {/* Receipt Modal - Keeping the same as before but responsive */}
       {showReceipt && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-3 sm:p-4">
           <div className="bg-white rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              {/* Header */}
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">Receipt</h2>
+            <div className="p-4 sm:p-6">
+              <div className="flex items-center justify-between mb-4 sm:mb-6">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+                  Receipt
+                </h2>
                 <button
                   onClick={() => setShowReceipt(false)}
                   className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -709,14 +751,12 @@ export function BookingPage() {
                 </button>
               </div>
 
-              {/* Receipt Content */}
-              <div className="space-y-6">
-                {/* Logo */}
+              <div className="space-y-4 sm:space-y-6">
                 <div className="text-center border-b pb-4">
                   <img
                     src="/new-akwaaba-logo.png"
                     alt="Akwaaba Auto"
-                    className="h-16 w-auto mx-auto mb-2"
+                    className="h-12 sm:h-16 w-auto mx-auto mb-2"
                   />
                   <p className="text-sm text-gray-600">Booking Confirmation</p>
                   <p className="text-xs text-gray-500">
@@ -725,12 +765,11 @@ export function BookingPage() {
                   </p>
                 </div>
 
-                {/* Customer Details */}
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">
+                  <h3 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base">
                     Customer Details
                   </h3>
-                  <div className="space-y-1 text-sm">
+                  <div className="space-y-1 text-xs sm:text-sm">
                     <p className="text-gray-600">
                       Name:{" "}
                       <span className="text-gray-900 font-medium">
@@ -751,11 +790,11 @@ export function BookingPage() {
                     </p>
                   </div>
                 </div>
-
-                {/* Vehicle */}
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Vehicle</h3>
-                  <p className="text-sm text-gray-900 font-medium">
+                  <h3 className="font-semibold text-gray-2000 mb-2 text-sm sm:text-base">
+                    Vehicle
+                  </h3>
+                  <p className="text-xs sm:text-sm text-gray-2000 font-medium">
                     {formData.year} {formData.make} {formData.model}
                   </p>
                   {formData.vin && (
@@ -763,29 +802,29 @@ export function BookingPage() {
                   )}
                 </div>
 
-                {/* Appointment */}
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">
+                  <h3 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base">
                     Appointment
                   </h3>
-                  <p className="text-sm text-gray-900 font-medium">
+                  <p className="text-xs sm:text-sm text-gray-900 font-medium">
                     October {formData.selectedDate}, 2024
                   </p>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-xs sm:text-sm text-gray-600">
                     {formData.selectedTime}
                   </p>
                 </div>
 
-                {/* Services */}
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-3">Services</h3>
+                  <h3 className="font-semibold text-gray-900 mb-3 text-sm sm:text-base">
+                    Services
+                  </h3>
                   <div className="space-y-2">
                     {formData.selectedServices.map((serviceId) => {
                       const service = services.find((s) => s.id === serviceId);
                       return (
                         <div
                           key={serviceId}
-                          className="flex justify-between text-sm"
+                          className="flex justify-between text-xs sm:text-sm"
                         >
                           <span className="text-gray-700">{service?.name}</span>
                           <span className="text-gray-900 font-medium">
@@ -798,33 +837,33 @@ export function BookingPage() {
                   </div>
                 </div>
 
-                {/* Total */}
                 <div className="border-t pt-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-lg font-bold text-gray-900">
+                    <span className="text-base sm:text-lg font-bold text-gray-900">
                       Total
                     </span>
-                    <span className="text-2xl font-bold text-primary">
-                      {getCurrencySymbol()}
-                      {convertCurrency(getSelectedServicesTotal())}
-                    </span>
+                    <div className="text-right">
+                      <span className="text-xl sm:text-2xl font-bold text-primary block">
+                        {getCurrencySymbol()}
+                        {convertCurrency(getSelectedServicesTotal())}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {currencies[selectedCurrency].name}
+                      </span>
+                    </div>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1 text-right">
-                    Currency: {currencies[selectedCurrency].name}
-                  </p>
                 </div>
 
-                {/* Actions */}
                 <div className="flex gap-3 pt-4">
                   <Button
-                    className="flex-1"
+                    className="flex-1 text-sm"
                     onClick={handlePrintReceipt}
                     icon={<Download className="w-4 h-4" />}
                   >
                     Print/Save
                   </Button>
                   <Button
-                    className="flex-1 bg-gray-200 text-gray-900 hover:bg-gray-300"
+                    className="flex-1 bg-gray-200 text-gray-900 hover:bg-gray-300 text-sm"
                     onClick={() => setShowReceipt(false)}
                   >
                     Close
@@ -837,17 +876,17 @@ export function BookingPage() {
       )}
 
       {/* Footer */}
-      <footer className="bg-secondary mt-12 py-6">
+      <footer className="bg-secondary mt-8 sm:mt-12 py-4 sm:py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-8">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8">
             <Link to="/" className="flex items-center">
               <img
                 src="/new-akwaaba-logo.png"
                 alt="Akwaaba Auto"
-                className="h-12 w-auto transition-transform hover:scale-105"
+                className="h-10 sm:h-12 w-auto"
               />
             </Link>
-            <p className="text-gray-500 text-sm text-center">
+            <p className="text-gray-500 text-xs sm:text-sm text-center">
               © 2026 Akwaaba Auto. All rights reserved. Tel: +(254) 722334455
             </p>
           </div>
