@@ -701,26 +701,25 @@ export function BookingPage() {
                 </div>
 
                 {/* Total */}
-                <div className="border-t border-gray-700 pt-4 mb-4 sm:mb-6">
+                <div className="border-t border-black pt-4 mb-4 sm:mb-6">
                   <div className="flex items-baseline justify-between">
-                    <span className="text-xs text-gray-400 uppercase tracking-wider">
+                    <span className="text-xs text-black uppercase tracking-wider">
                       Estimated Total
                     </span>
                     <div className="text-right">
-                      <span className="text-2xl sm:text-3xl font-bold text-primary block">
+                      <span className="text-2xl sm:text-3xl font-bold text-black block">
                         {getCurrencySymbol()}
                         {convertCurrency(getSelectedServicesTotal())}
                       </span>
-                      <span className="text-xs text-gray-500 mt-0.5 block">
+                      <span className="text-xs text-black mt-0.5 block">
                         {currencies[selectedCurrency].name}
                       </span>
                     </div>
                   </div>
-                  <p className="text-xs text-gray-500 mt-2">
+                  <p className="text-xs text-black mt-2">
                     Plus applicable taxes and optional fees.
                   </p>
                 </div>
-
                 <Button
                   className="w-full py-3 sm:py-4 text-sm sm:text-base"
                   icon={<CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" />}
