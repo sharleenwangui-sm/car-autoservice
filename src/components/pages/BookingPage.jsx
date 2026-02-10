@@ -636,24 +636,24 @@ export function BookingPage() {
             </Card>
           </div>
           {/* Booking Summary Sidebar */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-3 xl:col-span-4">
             <div className="sticky top-20 sm:top-24">
-              <Card className="bg-secondary text-white p-4 sm:p-6">
-                <div className="flex items-center gap-2 mb-4 sm:mb-6">
-                  <div className="w-7 h-7 sm:w-8 sm:h-8 bg-primary rounded-lg flex items-center justify-center">
-                    <Car className="w-4 h-4 text-secondary" />
+              <Card className="bg-secondary text-white p-4 sm:p-6 lg:p-8 min-h-[600px] lg:min-h-[700px]">
+                <div className="flex items-center gap-2 mb-6 sm:mb-8">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-lg flex items-center justify-center">
+                    <Car className="w-5 h-5 sm:w-6 sm:h-6 text-secondary" />
                   </div>
-                  <h3 className="font-bold text-base sm:text-lg text-black">
+                  <h3 className="font-bold text-lg sm:text-xl lg:text-2xl text-black">
                     Booking Summary
                   </h3>
                 </div>
 
-                <div className="mb-4">
-                  <p className="text-xs sm:text-sm text-black font-bold uppercase tracking-wider mb-2">
+                <div className="mb-6 sm:mb-8">
+                  <p className="text-sm sm:text-base lg:text-lg text-black font-bold uppercase tracking-wider mb-3 sm:mb-4">
                     Selected Services
                   </p>
                   {formData.selectedServices.length > 0 ? (
-                    <div className="space-y-2">
+                    <div className="space-y-3 sm:space-y-4">
                       {formData.selectedServices.map((serviceId) => {
                         const service = services.find(
                           (s) => s.id === serviceId,
@@ -661,12 +661,12 @@ export function BookingPage() {
                         return (
                           <div
                             key={serviceId}
-                            className="flex justify-between text-sm sm:text-base"
+                            className="flex justify-between items-center text-base sm:text-lg lg:text-xl p-2 sm:p-3 bg-white/10 rounded-lg"
                           >
-                            <span className="text-black font-semibold truncate mr-2">
+                            <span className="text-black font-semibold truncate mr-4 flex-1">
                               {service?.name}
                             </span>
-                            <span className="flex-shrink-0 text-black font-bold">
+                            <span className="flex-shrink-0 text-black font-bold whitespace-nowrap">
                               {service?.price === 0
                                 ? service?.priceDisplay
                                 : `${getCurrencySymbol()}${convertCurrency(service?.price || 0)}`}
@@ -676,62 +676,69 @@ export function BookingPage() {
                       })}
                     </div>
                   ) : (
-                    <p className="text-black font-semibold text-sm sm:text-base">
+                    <p className="text-black font-semibold text-base sm:text-lg lg:text-xl p-4 bg-white/10 rounded-lg text-center">
                       No services selected
                     </p>
                   )}
                 </div>
 
-                <div className="mb-4">
-                  <p className="text-xs sm:text-sm text-black font-bold uppercase tracking-wider mb-1">
+                <div className="mb-6 sm:mb-8">
+                  <p className="text-sm sm:text-base lg:text-lg text-black font-bold uppercase tracking-wider mb-2 sm:mb-3">
                     Vehicle
                   </p>
-                  <p className="font-bold text-black text-sm sm:text-base">
+                  <p className="font-bold text-black text-base sm:text-lg lg:text-xl p-3 sm:p-4 bg-white/10 rounded-lg">
                     {formData.year && formData.make && formData.model
                       ? `${formData.year} ${formData.make} ${formData.model}`
                       : "Not selected"}
                   </p>
                 </div>
 
-                <div className="mb-4 sm:mb-6">
-                  <p className="text-xs sm:text-sm text-black font-bold uppercase tracking-wider mb-1">
+                <div className="mb-8 sm:mb-10">
+                  <p className="text-sm sm:text-base lg:text-lg text-black font-bold uppercase tracking-wider mb-2 sm:mb-3">
                     Appointment
                   </p>
-                  <div className="flex items-center gap-2 text-primary">
-                    <Calendar className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-                    <span className="font-bold text-black text-sm sm:text-base">
+                  <div className="flex items-center gap-3 text-primary p-3 sm:p-4 bg-white/10 rounded-lg">
+                    <Calendar className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 flex-shrink-0" />
+                    <span className="font-bold text-black text-base sm:text-lg lg:text-xl">
                       Oct {formData.selectedDate}, 2024 at{" "}
                       {formData.selectedTime}
                     </span>
                   </div>
                 </div>
 
-                <div className="border-t border-black pt-4 mb-4 sm:mb-6">
-                  <div className="flex items-baseline justify-between">
-                    <span className="text-sm sm:text-base text-black font-bold uppercase tracking-wider">
-                      Estimated Total
-                    </span>
+                <div className="border-t-2 border-black pt-6 sm:pt-8 mb-8 sm:mb-10">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                      <span className="text-base sm:text-lg lg:text-xl text-black font-bold uppercase tracking-wider">
+                        Estimated Total
+                      </span>
+                      <p className="text-sm sm:text-base lg:text-lg text-black font-semibold mt-2">
+                        Plus applicable taxes and optional fees.
+                      </p>
+                    </div>
                     <div className="text-right">
-                      <span className="text-3xl sm:text-4xl font-extrabold text-black block">
+                      <span className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-black block">
                         {getCurrencySymbol()}
                         {convertCurrency(getSelectedServicesTotal())}
                       </span>
-                      <span className="text-xs sm:text-sm text-black font-semibold mt-0.5 block">
+                      <span className="text-sm sm:text-base lg:text-lg text-black font-semibold mt-1 sm:mt-2 block">
                         {currencies[selectedCurrency].name}
                       </span>
                     </div>
                   </div>
-                  <p className="text-xs sm:text-sm text-black font-semibold mt-2">
-                    Plus applicable taxes and optional fees.
-                  </p>
                 </div>
-                <Button
-                  className="w-full py-3 sm:py-4 text-sm sm:text-base"
-                  icon={<CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" />}
-                  onClick={handleConfirmBooking}
-                >
-                  Confirm Appointment
-                </Button>
+
+                <div className="mt-auto pt-4">
+                  <Button
+                    className="w-full py-4 sm:py-5 lg:py-6 text-base sm:text-lg lg:text-xl font-bold"
+                    icon={
+                      <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7" />
+                    }
+                    onClick={handleConfirmBooking}
+                  >
+                    Confirm Appointment
+                  </Button>
+                </div>
               </Card>
             </div>
           </div>{" "}
