@@ -9,7 +9,7 @@ const ServiceCarousel = () => {
   const [touchEnd, setTouchEnd] = useState(null);
 
   // Minimum swipe distance
-  const minSwipeDistance = 50;
+  const minSwipeDistance = 40;
 
   const currentService = serviceData[currentIndex];
 
@@ -131,7 +131,7 @@ const ServiceCarousel = () => {
 
           {/* CTA Button - FIXED */}
           <Link
-            to="/booking"
+            to={`/booking/${currentService.id}`}
             className="block w-full text-center px-6 py-3 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition-colors text-sm md:text-base active:scale-95"
           >
             Book This Service

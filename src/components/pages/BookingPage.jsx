@@ -11,29 +11,44 @@ import {
   Download,
 } from "lucide-react";
 import { Button, Card } from "../ui";
-// CORRECTED IMPORT - Remove .js extension
 import { serviceData } from "../data/service";
 
 export function BookingPage() {
   const { serviceId } = useParams();
   const navigate = useNavigate();
 
-  // Helper function to safely extract price as number
+  // Helper function to handle both numeric and text prices
   const extractPrice = (priceString) => {
     if (typeof priceString === "number") return priceString;
     if (!priceString) return 0;
 
-    // Remove all non-numeric characters except decimal point
+    // Check if price contains non-numeric text (like "Varies", "Custom Quote")
+    const textPrices = [
+      "varies",
+      "custom quote",
+      "request quote",
+      "available now",
+      "on request",
+    ];
+    const lowerPrice = priceString.toString().toLowerCase();
+
+    // If it's a text price, return 0 (we'll display the original string instead)
+    if (textPrices.some((text) => lowerPrice.includes(text))) {
+      return 0;
+    }
+
+    // Extract numeric value for actual prices
     const numericPrice = priceString.toString().replace(/[^0-9.]/g, "");
     const price = parseFloat(numericPrice);
     return isNaN(price) ? 0 : price;
   };
 
-  // Map serviceData with proper price extraction
+  // Map serviceData - keep BOTH original price string AND numeric value
   const services = serviceData.map((service) => ({
     id: service.id.toString(),
     name: service.name,
     price: extractPrice(service.price),
+    priceDisplay: service.price, // Keep original price string for display
   }));
 
   const steps = [
@@ -159,12 +174,9 @@ export function BookingPage() {
     }, 0);
   };
 
-  // IMPROVED: Format currency with proper thousand separators
   const convertCurrency = (amount) => {
     const rate = currencies[selectedCurrency].rate;
     const convertedAmount = amount * rate;
-
-    // Format with commas for thousands
     return convertedAmount.toLocaleString("en-US", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
@@ -210,7 +222,6 @@ export function BookingPage() {
       <header className="bg-white border-b sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-20">
-            {/* Back Button & Logo */}
             <div className="flex items-center gap-2 sm:gap-3">
               <Link
                 to="/"
@@ -230,7 +241,6 @@ export function BookingPage() {
               </Link>
             </div>
 
-            {/* Progress Steps - Hidden on small screens */}
             <div className="hidden lg:flex items-center gap-2">
               {steps.map((step, index) => (
                 <div key={step.id} className="flex items-center">
@@ -274,7 +284,6 @@ export function BookingPage() {
               ))}
             </div>
 
-            {/* Currency Selector */}
             <div className="flex items-center gap-2">
               <select
                 value={selectedCurrency}
@@ -324,7 +333,6 @@ export function BookingPage() {
 
       <main className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-6 sm:py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-          {/* Main Form Area */}
           <div className="lg:col-span-2 space-y-6 sm:space-y-8">
             {/* Step 1: Select Services */}
             <Card className="p-4 sm:p-6 scroll-mt-24" ref={sectionRefs[1]}>
@@ -369,8 +377,9 @@ export function BookingPage() {
                       </span>
                     </div>
                     <span className="font-bold text-gray-900 text-xs sm:text-sm ml-2 flex-shrink-0">
-                      {getCurrencySymbol()}
-                      {convertCurrency(service.price)}
+                      {service.price === 0
+                        ? service.priceDisplay
+                        : `${getCurrencySymbol()}${convertCurrency(service.price)}`}
                     </span>
                   </label>
                 ))}
@@ -626,7 +635,6 @@ export function BookingPage() {
               </div>
             </Card>
           </div>
-
           {/* Booking Summary Sidebar */}
           <div className="lg:col-span-1">
             <div className="sticky top-20 sm:top-24">
@@ -635,14 +643,13 @@ export function BookingPage() {
                   <div className="w-7 h-7 sm:w-8 sm:h-8 bg-primary rounded-lg flex items-center justify-center">
                     <Car className="w-4 h-4 text-secondary" />
                   </div>
-                  <h3 className="font-bold text-base sm:text-lg">
+                  <h3 className="font-bold text-base sm:text-lg text-black">
                     Booking Summary
                   </h3>
                 </div>
 
-                {/* Services */}
                 <div className="mb-4">
-                  <p className="text-xs text-gray-800 uppercase tracking-wider mb-2">
+                  <p className="text-xs sm:text-sm text-black font-bold uppercase tracking-wider mb-2">
                     Selected Services
                   </p>
                   {formData.selectedServices.length > 0 ? (
@@ -654,69 +661,67 @@ export function BookingPage() {
                         return (
                           <div
                             key={serviceId}
-                            className="flex justify-between text-xs sm:text-sm"
+                            className="flex justify-between text-sm sm:text-base"
                           >
-                            <span className="text-gray-800 truncate mr-2">
+                            <span className="text-black font-semibold truncate mr-2">
                               {service?.name}
                             </span>
-                            <span className="flex-shrink-0">
-                              {getCurrencySymbol()}
-                              {convertCurrency(service?.price || 0)}
+                            <span className="flex-shrink-0 text-black font-bold">
+                              {service?.price === 0
+                                ? service?.priceDisplay
+                                : `${getCurrencySymbol()}${convertCurrency(service?.price || 0)}`}
                             </span>
                           </div>
                         );
                       })}
                     </div>
                   ) : (
-                    <p className="text-gray-800 text-xs sm:text-sm">
+                    <p className="text-black font-semibold text-sm sm:text-base">
                       No services selected
                     </p>
                   )}
                 </div>
 
-                {/* Vehicle */}
                 <div className="mb-4">
-                  <p className="text-xs text-gray-800 uppercase tracking-wider mb-1">
+                  <p className="text-xs sm:text-sm text-black font-bold uppercase tracking-wider mb-1">
                     Vehicle
                   </p>
-                  <p className="font-semibold text-gray-800 text-xs sm:text-sm">
+                  <p className="font-bold text-black text-sm sm:text-base">
                     {formData.year && formData.make && formData.model
                       ? `${formData.year} ${formData.make} ${formData.model}`
                       : "Not selected"}
                   </p>
                 </div>
 
-                {/* Appointment */}
                 <div className="mb-4 sm:mb-6">
-                  <p className="text-xs text-gray-800 uppercase tracking-wider mb-1">
+                  <p className="text-xs sm:text-sm text-black font-bold uppercase tracking-wider mb-1">
                     Appointment
                   </p>
                   <div className="flex items-center gap-2 text-primary">
-                    <Calendar className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-                    <span className="font-semibold text-xs sm:text-sm">
+                    <Calendar className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                    <span className="font-bold text-black text-sm sm:text-base">
                       Oct {formData.selectedDate}, 2024 at{" "}
                       {formData.selectedTime}
                     </span>
                   </div>
                 </div>
 
-                {/* Total */}
                 <div className="border-t border-black pt-4 mb-4 sm:mb-6">
                   <div className="flex items-baseline justify-between">
-                    <span className="text-xs text-black uppercase tracking-wider">
+                    <span className="text-sm sm:text-base text-black font-bold uppercase tracking-wider">
                       Estimated Total
                     </span>
                     <div className="text-right">
-                      <span className="text-2xl sm:text-3xl font-bold text-black block">
+                      <span className="text-3xl sm:text-4xl font-extrabold text-black block">
                         {getCurrencySymbol()}
                         {convertCurrency(getSelectedServicesTotal())}
                       </span>
-                      <span className="text-xs text-black mt-0.5 block">
+                      <span className="text-xs sm:text-sm text-black font-semibold mt-0.5 block">
                         {currencies[selectedCurrency].name}
                       </span>
                     </div>
                   </div>
-                  <p className="text-xs text-black mt-2">
+                  <p className="text-xs sm:text-sm text-black font-semibold mt-2">
                     Plus applicable taxes and optional fees.
                   </p>
                 </div>
@@ -729,11 +734,11 @@ export function BookingPage() {
                 </Button>
               </Card>
             </div>
-          </div>
+          </div>{" "}
         </div>
       </main>
 
-      {/* Receipt Modal - Keeping the same as before but responsive */}
+      {/* Receipt Modal */}
       {showReceipt && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-3 sm:p-4">
           <div className="bg-white rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
@@ -789,11 +794,12 @@ export function BookingPage() {
                     </p>
                   </div>
                 </div>
+
                 <div>
-                  <h3 className="font-semibold text-gray-2000 mb-2 text-sm sm:text-base">
+                  <h3 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base">
                     Vehicle
                   </h3>
-                  <p className="text-xs sm:text-sm text-gray-2000 font-medium">
+                  <p className="text-xs sm:text-sm text-gray-900 font-medium">
                     {formData.year} {formData.make} {formData.model}
                   </p>
                   {formData.vin && (
@@ -827,8 +833,9 @@ export function BookingPage() {
                         >
                           <span className="text-gray-700">{service?.name}</span>
                           <span className="text-gray-900 font-medium">
-                            {getCurrencySymbol()}
-                            {convertCurrency(service?.price || 0)}
+                            {service?.price === 0
+                              ? service?.priceDisplay
+                              : `${getCurrencySymbol()}${convertCurrency(service?.price || 0)}`}
                           </span>
                         </div>
                       );
